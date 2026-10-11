@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Vehicle Approval Checklist</title>
+<style>
+:root{
+  --bg:#0b0f17; --panel:#121826; --panel2:#182033; --line:#2a3650;
+  --txt:#e8edf7; --sub:#8ea0c2; --accent:#5aa7d4;
+  --good:#5ac17e; --bad:#e0646b; --warn:#e0b25a; --na:#7d8aa6; --radius:14px;
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#f2f4f9; --panel:#ffffff; --panel2:#eef1f8; --line:#d8dee9; --txt:#1a2030; --sub:#5a6680; --accent:#2f7fb0; --good:#2e9c57; --bad:#cc4049; --warn:#a97a14; --na:#6b7791; }
+}
+*{box-sizing:border-box;}
+body{margin:0; background:var(--bg); color:var(--txt); font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif; padding-bottom:env(safe-area-inset-bottom,0);}
+.wrap{max-width:820px; margin:0 auto; padding:0 16px 80px;}
+.topbar{position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); padding:12px 16px 10px;}
+.topbar-in{max-width:820px; margin:0 auto; display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.logo{font-weight:800; letter-spacing:.08em; color:var(--accent); font-size:14px;}
+.badge-staff{font-size:11px; border:1px solid var(--accent); color:var(--accent); border-radius:99px; padding:2px 8px; letter-spacing:.06em;}
+.verdict{margin-left:auto; font-weight:700; font-size:13px; padding:6px 12px; border-radius:99px; background:var(--panel2); border:1px solid var(--line);}
+.verdict.ok{color:var(--good); border-color:var(--good);} .verdict.bad{color:var(--bad); border-color:var(--bad);}
+.bar{height:5px; background:var(--line); border-radius:9px; margin:10px auto 0; overflow:hidden; max-width:820px;}
+.bar i{display:block; height:100%; width:0; background:var(--accent); transition:width .25s;}
+.nav{max-width:820px; margin:8px auto 0; display:flex; gap:6px; overflow-x:auto; padding-bottom:2px;}
+.nav a{flex:none; font-size:12px; color:var(--sub); text-decoration:none; border:1px solid var(--line); border-radius:99px; padding:4px 10px; background:var(--panel);}
+.nav a.f{border-color:var(--bad); color:var(--bad);} .nav a.d{border-color:var(--good); color:var(--good);}
+h1{font-size:clamp(22px,5vw,28px); margin:22px 0 4px;}
+.lead{color:var(--sub); font-size:14px; line-height:1.5; margin:0 0 18px;}
+.panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; margin-bottom:14px;}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+@media(max-width:560px){.grid{grid-template-columns:1fr;}}
+label.f{display:block; font-size:12px; color:var(--sub); margin-bottom:4px;}
+input[type=text],select,textarea{width:100%; background:var(--panel2); color:var(--txt); border:1px solid var(--line); border-radius:8px; padding:10px; font:inherit; font-size:14px;}
+textarea{resize:vertical; min-height:60px;}
+textarea.mono{font-family:Consolas,Menlo,monospace; font-size:12px; min-height:140px;}
+.sec h2{font-size:15px; color:var(--accent); margin:0 0 2px; display:flex; justify-content:space-between; align-items:baseline; gap:8px;}
+.sec h2 small{color:var(--sub); font-weight:400; font-size:12px;}
+.sec .intro{font-size:12px; color:var(--sub); margin:0 0 6px; line-height:1.4;}
+.sec.fail{border-color:var(--bad);}
+.item{padding:12px 0; border-top:1px solid var(--line);}
+.item.first{border-top:none;}
+.item .t{font-size:14px; line-height:1.45;}
+.item .h{font-size:12px; color:var(--sub); margin-top:3px; line-height:1.45;}
+.seg{display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; align-items:center;}
+.seg button.m{flex:1; min-width:70px; padding:9px 10px; border-radius:8px; border:1px solid var(--line); background:var(--panel2); color:var(--sub); font:inherit; font-size:13px; font-weight:600; cursor:pointer;}
+.seg button.on.pass{background:var(--good); border-color:var(--good); color:#06180d;}
+.seg button.on.fail{background:var(--bad); border-color:var(--bad); color:#fff;}
+.seg button.on.na{background:var(--na); border-color:var(--na); color:#fff;}
+.seg button.ex{flex:none; background:none; border:none; color:var(--accent); font:inherit; font-size:12px; cursor:pointer; text-decoration:underline; padding:4px;}
+.note{margin-top:8px; display:none;} .item.fail .note{display:block;} .note textarea{min-height:48px;}
+.auto{font-size:11px; color:var(--warn); margin-left:6px;}
+.refs{display:none; margin-top:8px;} .refs.open{display:block;}
+.refs h4{font-size:12px; color:var(--sub); margin:8px 0 4px; font-weight:600;}
+.refs .row{display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;}
+.refs img{height:84px; border-radius:6px; border:1px solid var(--line); cursor:zoom-in; background:#000;}
+.final{border-left:3px solid var(--accent);}
+.btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
+.btn{flex:1; min-width:140px; padding:12px 16px; border-radius:10px; border:none; background:var(--accent); color:#06121b; font-weight:700; font-size:14px; cursor:pointer;}
+.btn.sec2{background:var(--panel2); color:var(--txt); border:1px solid var(--line);}
+table.ck{width:100%; border-collapse:collapse; font-size:12px; margin-top:10px;}
+table.ck th,table.ck td{border-bottom:1px solid var(--line); padding:5px 6px; text-align:left;}
+table.ck th{color:var(--sub); font-weight:600;}
+.st-ok{color:var(--good); font-weight:700;} .st-bad{color:var(--bad); font-weight:700;} .st-miss{color:var(--warn); font-weight:700;}
+.sum{font-size:13px; margin-top:10px; line-height:1.5;}
+details.b{border-top:1px solid var(--line); padding:8px 0;}
+details.b summary{cursor:pointer; font-size:14px; display:flex; justify-content:space-between; gap:8px;}
+details.b summary small{color:var(--sub);}
+details.b label{display:flex; gap:8px; align-items:flex-start; font-size:13px; color:var(--sub); padding:5px 0 0 4px; line-height:1.4;}
+.lbox{position:fixed; inset:0; background:rgba(0,0,0,.88); display:none; align-items:center; justify-content:center; z-index:60; padding:16px; flex-direction:column; gap:8px; cursor:zoom-out;}
+.lbox.show{display:flex;} .lbox img{max-width:100%; max-height:86vh;} .lbox span{color:#fff; font-size:13px;}
+pre#reportOut{white-space:pre-wrap; word-break:break-word; margin:0; font:inherit; font-size:13px; line-height:1.55; color:var(--txt);}
+.toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--panel2); border:1px solid var(--line); padding:10px 16px; border-radius:10px; font-size:13px; opacity:0; pointer-events:none; transition:opacity .2s; z-index:70;}
+.toast.show{opacity:1;}
+#gate{position:fixed; inset:0; background:var(--bg); z-index:50; display:none; align-items:center; justify-content:center; padding:20px;}
+#gate .box{max-width:340px; width:100%;}
+@media print{
+  .wrap > :not(#reportPanel){display:none!important;}
+  #reportPanel{border:none!important;} pre#reportOut{color:#000;}
+  .topbar,.btns,.seg button.m:not(.on),.seg button.ex,.toast,#gate,.refs,#tools{display:none!important;}
+  body{background:#fff; color:#000;} .panel{border-color:#999; break-inside:avoid;} .item .h{color:#444;}
+  .note{display:block!important;}
+}
+</style>
+</head>
+<body>
+
+<div id="gate"><div class="box panel">
+  <h2 style="margin-top:0">Staff access</h2>
+  <p class="lead">Enter the staff passcode to open the checklist.</p>
+  <input type="text" id="gateIn" placeholder="Passcode" autocomplete="off">
+  <div class="btns"><button class="btn" id="gateBtn">Open</button></div>
+  <p class="lead" id="gateErr" style="color:var(--bad);margin:10px 0 0"></p>
+</div></div>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <span class="logo">VEHICLE APPROVAL</span><span class="badge-staff">STAFF ONLY</span>
+    <span class="verdict" id="verdict">In review</span>
+  </div>
+  <div class="bar"><i id="barFill"></i></div>
+  <div class="nav" id="nav"></div>
+</div>
+
+<div class="wrap">
+  <h1>Vehicle approval checklist</h1>
+  <p class="lead">Work top to bottom. Mark every check <b>Pass</b>, <b>Fail</b> or <b>N/A</b>; a failed check opens a note for the reason. Use the tools inside each section (handling.meta checker, brand lookup, example screenshots). Progress saves in this browser.</p>
+
+  <div class="panel">
+    <div class="grid">
+      <div><label class="f">Vehicle name</label><input type="text" id="vName"></div>
+      <div><label class="f">Submitted by</label><input type="text" id="vBy"></div>
+      <div><label class="f">Vehicle type</label>
+        <select id="vType"><option value="">Select…</option><option value="civilian">Civilian</option><option value="club">Club</option><option value="police">Police</option><option value="medic">Medic</option><option value="gang">Gang</option></select></div>
+      <div><label class="f">Class</label><select id="vClass"></select></div>
+      <div><label class="f">Reviewed by</label><input type="text" id="vRev"></div>
+      <div><label class="f">Review date</label><input type="text" id="vDate"></div>
+    </div>
+  </div>
+
+  <div id="sections"></div>
+
+  <div class="panel" id="reportPanel">
+    <h2 style="margin:0 0 8px;font-size:15px;color:var(--accent)">Report</h2>
+    <pre id="reportOut"></pre>
+  </div>
+
+  <div class="panel final">
+    <div class="grid">
+      <div><label class="f">Staff decision</label>
+        <select id="decision"><option value="">Not decided</option><option>Approved</option><option>Changes required</option><option>Rejected</option></select></div>
+    </div>
+    <label class="f" style="margin-top:10px">Overall staff notes</label>
+    <textarea id="overall" placeholder="Anything the developer should know…"></textarea>
+    <div class="btns">
+      <button class="btn" id="copyBtn">Copy report</button>
+      <button class="btn sec2" id="printBtn">Print / Save PDF</button>
+      <button class="btn sec2" id="resetBtn">Reset checklist</button>
+    </div>
+  </div>
+</div>
+<div class="lbox" id="lbox"><img id="lboxImg" alt=""><span id="lboxCap"></span></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== CONFIG =====
+// Optional passcode. Leave "" to disable. Client-side convenience gate only — readable in page source.
+const STAFF_PASSCODE = "";
+
+// ===== DATA (generated from the final guide) =====
+const CLASSES = {"Compacts": "Compacts", "Sedans": "Sedans", "SUVs": "SUVs", "Coupes": "Coupes", "Muscle": "Muscle", "SportsClassics": "Sports Classics", "Sports": "Sports", "Super": "Super", "Motorcycles": "Motorcycles", "OffRoad": "Off Road", "Industrial": "Industrial", "Utility": "Utility", "Vans": "Vans", "Cycles": "Cycles", "Boats": "Boats", "Helicopters": "Helicopters", "Planes": "Planes", "Service": "Service", "Emergency": "Emergency", "Military": "Military", "Commercial": "Commercial", "Trains": "Trains", "OpenWheel": "Open Wheel"};
+const HMETA = {
+"OffRoad": {
+"fMass": [
+"1800",
+"fixed"
+],
+"fDownforceModifier": [
+"3",
+"max"
+],
+"fInitialDragCoeff": [
+"5",
+"top speed limited to 250 km/h"
+],
+"fPercentSubmerged": [
+"85",
+"fixed"
+],
+"fDriveBiasFront": [
+"0.5",
+""
+],
+"nInitialDriveGears": [
+"6",
+"max"
+],
+"fInitialDriveForce": [
+"0.3",
+"fixed"
+],
+"fDriveInertia": [
+"1",
+"fixed"
+],
+"fClutchChangeRateScaleUpShift": [
+"2",
+""
+],
+"fClutchChangeRateScaleDownShift": [
+"2",
+""
+],
+"fInitialDriveMaxFlatVel": [
+"150",
+""
+],
+"fBrakeForce": [
+"2.5",
+"fixed"
+],
+"fBrakeBiasFront": [
+"0.5",
+""
+],
+"fHandBrakeForce": [
+"1",
+"fixed"
+],
+"fSteeringLock": [
+"35",
+"max"
+],
+"fTractionCurveMax": [
+"3.5",
+"max"
+],
+"fTractionCurveMin": [
+"3.5",
+"max"
+],
+"fTractionCurveLateral": [
+"22.5",
+"fixed"
+],
+"fTractionSpringDeltaMax": [
+"0.15",
+"fixed"
+],
+"fLowSpeedTractionLossMult": [
+"0.8",
+"min"
+],
+"fCamberStiffnesss": [
+"0",
+"fixed"
+],
+"fTractionBiasFront": [
+"0.5",
+""
+],
+"fTractionLossMult": [
+"1",
+"min"
+],
+"fSuspensionForce": [
+"2.5",
+""
+],
+"fSuspensionCompDamp": [
+"1.5",
+""
+],
+"fSuspensionReboundDamp": [
+"1.5",
+""
+],
+"fSuspensionUpperLimit": [
+"0.2",
+""
+],
+"fSuspensionLowerLimit": [
+"-0.2",
+""
+],
+"fSuspensionRaise": [
+"0",
+""
+],
+"fSuspensionBiasFront": [
+"0.5",
+""
+],
+"fAntiRollBarForce": [
+"1",
+"max"
+],
+"fAntiRollBarBiasFront": [
+"0.5",
+""
+],
+"fRollCentreHeightFront": [
+"0.5",
+""
+],
+"fRollCentreHeightRear": [
+"0.5",
+""
+],
+"fCollisionDamageMult": [
+"1.25",
+"fixed"
+],
+"fWeaponDamageMult": [
+"1.25",
+"fixed"
+],
+"fDeformationDamageMult": [
+"0",
+"fixed"
+],
+"fEngineDamageMult": [
+"1.25",
+"fixed"
+],
+"fPetrolTankVolume": [
+"60",
+"fixed"
+],
+"fOilVolume": [
+"6",
+"fixed"
+],
+"fSeatOffsetDistX": [
+"0",
+""
+],
+"fSeatOffsetDistY": [
+"0",
+""
+],
+"fSeatOffsetDistZ": [
+"0",
+""
+],
+"nMonetaryValue": [
+"50000",
+"fixed"
+],
+"strModelFlags": [
+"440010",
+"fixed"
+],
+"strHandlingFlags": [
+"800008",
+"fixed"
+],
+"strDamageFlags": [
+"0",
+"fixed"
+],
+"AIHandling": [
+"AVERAGE",
+"fixed"
+]
+},
+"Commercial": {
+"fMass": [
+"2000",
+"fixed"
+],
+"fDownforceModifier": [
+"3",
+"max"
+],
+"fInitialDragCoeff": [
+"5",
+"top speed limited to 230 km/h"
+],
+"fPercentSubmerged": [
+"85",
+"fixed"
+],
+"fDriveBiasFront": [
+"0.5",
+""
+],
+"nInitialDriveGears": [
+"6",
+"max"
+],
+"fInitialDriveForce": [
+"0.3",
+"fixed"
+],
+"fDriveInertia": [
+"1",
+"fixed"
+],
+"fClutchChangeRateScaleUpShift": [
+"2",
+""
+],
+"fClutchChangeRateScaleDownShift": [
+"2",
+""
+],
+"fInitialDriveMaxFlatVel": [
+"150",
+""
+],
+"fBrakeForce": [
+"2.5",
+"fixed"
+],
+"fBrakeBiasFront": [
+"0.5",
+""
+],
+"fHandBrakeForce": [
+"1",
+"fixed"
+],
+"fSteeringLock": [
+"40",
+"max"
+],
+"fTractionCurveMax": [
+"4.5",
+"max"
+],
+"fTractionCurveMin": [
+"4.5",
+"max"
+],
+"fTractionCurveLateral": [
+"22.5",
+"fixed"
+],
+"fTractionSpringDeltaMax": [
+"0.15",
+"fixed"
+],
+"fLowSpeedTractionLossMult": [
+"0.8",
+"min"
+],
+"fCamberStiffnesss": [
+"0",
+"fixed"
+],
+"fTractionBiasFront": [
+"0.5",
+""
+],
+"fTractionLossMult": [
+"0.8",
+"min"
+],
+"fSuspensionForce": [
+"2.5",
+""
+],
+"fSuspensionCompDamp": [
+"1.5",
+""
+],
+"fSuspensionReboundDamp": [
+"1.5",
+""
+],
+"fSuspensionUpperLimit": [
+"0.2",
+""
+],
+"fSuspensionLowerLimit": [
+"-0.2",
+""
+],
+"fSuspensionRaise": [
+"0",
+""
+],
+"fSuspensionBiasFront": [
+"0.5",
+""
+],
+"fAntiRollBarForce": [
+"1",
+"max"
+],
+"fAntiRollBarBiasFront": [
+"0.5",
+""
+],
+"fRollCentreHeightFront": [
+"0.5",
+""
+],
+"fRollCentreHeightRear": [
+"0.5",
+""
+],
+"fCollisionDamageMult": [
+"1",
+"fixed"
+],
+"fWeaponDamageMult": [
+"1",
+"fixed"
+],
+"fDeformationDamageMult": [
+"0",
+"fixed"
+],
+"fEngineDamageMult": [
+"1",
+"fixed"
+],
+"fPetrolTankVolume": [
+"80",
+"fixed"
+],
+"fOilVolume": [
+"8",
+"fixed"
+],
+"fSeatOffsetDistX": [
+"0",
+""
+],
+"fSeatOffsetDistY": [
+"0",
+""
+],
+"fSeatOffsetDistZ": [
+"0",
+""
+],
+"nMonetaryValue": [
+"50000",
+"fixed"
+],
+"strModelFlags": [
+"440010",
+"fixed"
+],
+"strHandlingFlags": [
+"800008",
+"fixed"
+],
+"strDamageFlags": [
+"0",
+"fixed"
+],
+"AIHandling": [
+"AVERAGE",
+"fixed"
+]
+}
+};
+// Standard reference for civilian, club, police and medic 4/6-wheel vehicles (gang vehicles use their own class files above).
+HMETA["Standard"] = {"fMass": ["1500", "max"], "fDownforceModifier": ["1", "max"], "fInitialDragCoeff": ["5.7", "top speed limited to 220 km/hr"], "fPercentSubmerged": ["85", ""], "fDriveBiasFront": ["0", ""], "nInitialDriveGears": ["6", "max"], "fInitialDriveForce": ["0.2", "max"], "fDriveInertia": ["1", "max"], "fClutchChangeRateScaleUpShift": ["2", ""], "fClutchChangeRateScaleDownShift": ["2", ""], "fInitialDriveMaxFlatVel": ["150", ""], "fBrakeForce": ["0.75", "max"], "fBrakeBiasFront": ["0.5", ""], "fHandBrakeForce": ["0.75", "max"], "fSteeringLock": ["35.0", "max"], "fTractionCurveMax": ["3.3", "max"], "fTractionCurveMin": ["3.3", "max"], "fTractionCurveLateral": ["22.5", ""], "fTractionSpringDeltaMax": ["0.15", "fixed"], "fLowSpeedTractionLossMult": ["1.2", "min"], "fCamberStiffnesss": ["0.00", "fixed"], "fTractionBiasFront": ["0.5", ""], "fTractionLossMult": ["1.2", "min"], "fSuspensionForce": ["2.5", ""], "fSuspensionCompDamp": ["2.1", ""], "fSuspensionReboundDamp": ["2.1", ""], "fSuspensionUpperLimit": ["0.12", ""], "fSuspensionLowerLimit": ["-0.12", ""], "fSuspensionRaise": ["0", ""], "fSuspensionBiasFront": ["0.5", ""], "fAntiRollBarForce": ["1", "max"], "fAntiRollBarBiasFront": ["0.5", ""], "fRollCentreHeightFront": ["0.3", ""], "fRollCentreHeightRear": ["0.3", ""], "fCollisionDamageMult": ["1.5", "min"], "fWeaponDamageMult": ["1.5", "min"], "fDeformationDamageMult": ["0", "min"], "fEngineDamageMult": ["1.5", "min"], "fPetrolTankVolume": ["60", "max"], "fOilVolume": ["6", "max"], "fSeatOffsetDistX": ["0", ""], "fSeatOffsetDistY": ["0", ""], "fSeatOffsetDistZ": ["0", ""], "nMonetaryValue": ["50000", "fixed"], "strModelFlags": ["440010", "fixed"], "strHandlingFlags": ["800008", "fixed"], "strDamageFlags": ["0", "fixed"], "AIHandling": ["AVERAGE", "fixed"]};
+const STD_CLASSES = ["Compacts","Sedans","SUVs","Coupes","Muscle","SportsClassics","Sports","Super","OffRoad","Industrial","Utility","Vans","Service","Emergency","Military","Commercial","OpenWheel"];
+const HREF_LABEL = {Standard:"Standard (civilian / club / police / medic)", OffRoad:"Gang Off-Road (4x4)", Commercial:"Gang Commercial (6x6)"};
+       // reference handling.meta rules: field -> [value, tag]
+const LORE = {"title": "Lore-friendliness \u2014 signature parts to change", "intro": "All real-world badges and branding must be removed. Beyond that, if your design is based on a real brand, at least 3 of that brand's signature features must be changed (for example lights, grille and interior), using the brands listed below as a reference (each brand lists at least 3 signature features). Change each one meaningfully: different proportions, a different motif, a different count or pattern. Keep the general design category (for example, a vertical-slat grille) but not the exact signature. That is the difference between homage and copy.", "groups": [{"heading": "Ultra-luxury", "rows": [{"brand": "Rolls-Royce", "items": ["Grille: Pantheon grille \u2014 tall, narrow, rounded top corners, vertical slats", "Lights: split headlight, thin LED strip above a round lamp", "Other: Spirit of Ecstasy hood ornament, coach (suicide) doors"]}, {"brand": "Bentley", "items": ["Grille: matrix mesh with a bold vertical center bar", "Lights: quad round/oval headlights", "Other: diamond-quilted interior stitching"]}, {"brand": "Bugatti", "items": ["Grille: horseshoe-shaped opening", "Lights: X-shaped taillight cluster", "Other: central spine line down hood/roof/trunk"]}, {"brand": "Maserati", "items": ["Grille: oval grille with vertical slats", "Other: boomerang-shaped C-pillar vent", "Other: three side vents on the front fender (Quattroporte-style)"]}, {"brand": "Aston Martin", "items": ["Grille: wide trapezoidal vane grille", "Other: side strake gills behind the front wheel", "Other: swan-wing (upward-angled) doors"]}]}, {"heading": "Luxury / premium", "rows": [{"brand": "Mercedes-Benz", "items": ["Grille: diamond-block pattern (sport) or vertical slats (classic); star-pattern grille on EVs", "Lights: eyebrow LED DRL shape; star-shaped light clusters", "Other: three-pointed star placement"]}, {"brand": "BMW", "items": ["Grille: twin kidney grille", "Lights: angel-eye ring DRLs", "Other: Hofmeister kink (C-pillar notch)"]}, {"brand": "Audi", "items": ["Grille: singleframe hexagonal grille", "Lights: angular LED DRL strips, sequential turn signals", "Interior: Virtual Cockpit full-digital instrument display"]}, {"brand": "Lexus", "items": ["Grille: spindle grille \u2014 aggressive hourglass shape", "Lights: arrow-head DRL signature", "Lights: full-width rear light bar (recent models)"]}, {"brand": "Genesis", "items": ["Grille: crest grille \u2014 two parallel horizontal lines", "Lights: two-line split lighting (quad lamps divided into thin bars)", "Other: G-Matrix grille texture"]}, {"brand": "Cadillac", "items": ["Grille: vertical slat theme", "Lights: vertical LED signature, headlight and taillight", "Other: tailfin-inspired vertical rear end (historic fins)"]}, {"brand": "Lincoln", "items": ["Grille: horizontal split-wing chrome bar", "Lights: full-width horizontal light bar", "Other: coach doors on special editions"]}, {"brand": "Jaguar", "items": ["Grille: mesh grille with chrome surround", "Lights: J-blade LED DRL shape", "Other: pronounced rear haunches over the wheels"]}, {"brand": "Land Rover / Range Rover", "items": ["Grille: minimal horizontal slats", "Lights: split (upper/lower) taillight", "Other: floating roofline, clamshell hood"]}, {"brand": "Volvo", "items": ["Grille: vertical slat layout", "Lights: Thor's Hammer LED DRL shape", "Lights: tall vertical taillights running up the rear pillar"]}]}, {"heading": "Performance / sports", "rows": [{"brand": "Ferrari", "items": ["Grille: oval/triangular opening", "Lights: dual round taillights (model-dependent)", "Interior: steering-wheel-mounted manettino dial and start button"]}, {"brand": "Lamborghini", "items": ["Grille: hexagonal theme throughout", "Lights: Y-shaped headlight/taillight motif", "Other: hexagonal air intakes"]}, {"brand": "Porsche", "items": ["Grille: minimal/no traditional grille on the 911", "Lights: round frog-eye headlights; full-width horizontal light bar taillight", "Other: whale-tail spoiler (Turbo)"]}, {"brand": "McLaren", "items": ["Grille: low, wide opening", "Lights: curved eye-socket LED DRL", "Other: dihedral (upward-swinging) doors"]}, {"brand": "Alfa Romeo", "items": ["Grille: triangular scudetto shield shape", "Lights: 3+3 LED headlight signature (Giulia/Stelvio)", "Interior: deep-set twin round gauge cluster ('telescope' style)"]}]}, {"heading": "Mainstream / volume", "rows": [{"brand": "Ford (Mustang)", "items": ["Lights: three-bar taillight signature", "Grille: low, wide trapezoid shark-nose grille", "Other: sculpted side scoop behind the doors"]}, {"brand": "Dodge", "items": ["Grille: crosshair grille (historic)", "Lights: full-width racetrack LED taillight (modern Charger/Challenger)", "Other: power-bulge hood with hood scoops (Challenger)"]}, {"brand": "Jeep", "items": ["Grille: seven-slot grille", "Other: trapezoidal wheel arches", "Lights: round headlights (Wrangler)"]}, {"brand": "Chevrolet", "items": ["Grille: bowtie-centered split grille", "Lights: split/quad taillight theme (Corvette)", "Interior: dual-cockpit layout with wraparound console (Corvette)"]}, {"brand": "Mitsubishi", "items": ["Grille: Dynamic Shield layered front fascia", "Lights: split headlight arrangement with upper DRL strip and lower main lamps", "Other: bonnet air vent (Lancer Evolution heritage)"]}, {"brand": "Hyundai", "items": ["Grille: parametric jewel-pattern grille texture", "Lights: parametric pixel lamp signature (Ioniq 5/6)", "Lights: daytime running lights hidden inside the grille (Tucson, Elantra)"]}, {"brand": "Kia", "items": ["Grille: tiger-nose grille shape", "Lights: boomerang-shaped headlight/taillight signature", "Lights: star-map LED signature (EV6/EV9)"]}, {"brand": "Mazda", "items": ["Lights: C-shaped through-taillight with matching DRL", "Grille: wide signature-wing grille flowing into the headlights", "Interior: minimal driver-focused dash with rotary commander knob"]}, {"brand": "Pontiac (historic)", "items": ["Grille: split grille", "Lights: hidden pop-up headlights (Firebird/Trans Am)", "Other: shaker hood scoop (Trans Am)"]}]}, {"heading": "Electric-era note", "note": "Lighting signature is now the main brand identifier, especially on EVs that don't need a traditional grille (for example, a minimal/no grille with a full-width light bar front and rear). For any EV-styled vehicle, the light shape is the single most important thing to alter."}], "links": []};         // brand signature features
+const REFS = {"collision": [{"heading": "Chassis collision (chassis.col)", "note": "Box-like collision following the body mesh.", "images": [{"src": "images/collision/chassis-left.png", "caption": "chassis.col \u2014 left view"}, {"src": "images/collision/chassis-front.png", "caption": "chassis.col \u2014 front view"}, {"src": "images/collision/chassis-back.png", "caption": "chassis.col \u2014 back view"}, {"src": "images/collision/chassis-top.png", "caption": "chassis.col \u2014 top view"}]}, {"heading": "Low LOD collision (chassis_lowlod.col)", "note": "A low detailed duplicate of the chassis collision.", "images": [{"src": "images/collision/chassis-lowlod.png", "caption": "chassis_lowlod.col \u2014 left view"}]}, {"heading": "Body parts", "images": [{"src": "images/collision/bonnet.png", "caption": "bonnet.col \u2014 top view"}, {"src": "images/collision/boot.png", "caption": "boot \u2014 front view"}, {"src": "images/collision/door.png", "caption": "door_dside_r.col"}]}, {"heading": "Wheels & other", "images": [{"src": "images/collision/wheel-lf-col.png", "caption": "wheel_lf.col"}, {"src": "images/collision/wheel-lf-child.png", "caption": "wheel_lf.child"}, {"src": "images/collision/chassis-dummy.png", "caption": "chassis_dummy.col \u2014 left view"}]}], "optimization": [{"heading": "Polygon count", "note": "The model viewer shows the total polygons and vertices. The total must stay under 400,000 polygons.", "images": [{"src": "images/optimization/polygon-count.png", "caption": "Model viewer \u2014 polygon and vertex count"}]}, {"heading": "File size (.yft / .ytd)", "note": "The FiveM console reports the memory each asset uses when the resource loads, including the _hi.yft. Each .yft and .ytd must stay within 32 MiB.", "images": [{"src": "images/optimization/asset-memory.png", "caption": "FiveM console \u2014 .yft, .ytd and _hi.yft memory usage"}]}]};         // example screenshots
+
+// Items: [text, hint, refKey?, id?]
+const SECTIONS = [
+  { id:'pack', title:'Submission pack', intro:'Confirm the submission is complete and correctly classified before reviewing anything else.', items:[
+    ['Vehicle type is selected and correct (civilian, club, police, medic or gang).'],
+    ['Handling class is selected and matches the real vehicle (a pickup is not submitted as a supercar, etc.).'],
+    ['Gang off-road vehicle is labelled 4x4 / gang commercial vehicle is labelled 6x6.', 'N/A if not a gang vehicle.'],
+    ['Submission type is non-escrowed.', 'Escrowed submissions are currently unavailable.'],
+    ['Front view reference image provided.', 'True orthographic view (no perspective shots), clearly matches the model.'],
+    ['Back view reference image provided.'],
+    ['Left side view reference image provided.'],
+    ['Top view reference image provided.'],
+    ['All required files are present and load without errors.', '.yft (and _hi.yft), .ytd, vehicles/handling/other metas and any collision or audio files the vehicle uses.']
+  ]},
+  { id:'lore', title:'1. Lore-friendliness', tool:'lore', items:[
+    ['Real-world badges removed from the exterior.', 'Front, rear, side badges, hood ornaments, wheel centre caps.'],
+    ['Real-world branding removed from the interior and wheels.', 'Steering wheel, dashboard, seats, gauges, tyre sidewalls.'],
+    ['No real-world logos or text in textures or liveries.', 'Open the .ytd and check every texture.'],
+    ['A lore-friendly brand and name are used.', 'Neither the brand nor the model name may be a real one.'],
+    ['The real-world reference vehicle is identified.', 'Use the brand lookup below to see its signature features.'],
+    ['At least 3 of the brand\'s signature features are changed.', 'For example lights, grille and interior. Count the features ticked as altered in the lookup below.'],
+    ['Signature grille is meaningfully altered.', 'Different proportions, motif, count or pattern.'],
+    ['Signature lighting (headlights, DRLs, taillights) is meaningfully altered.', 'For EV-styled vehicles the light shape is the most important thing to change.'],
+    ['Vehicle does not read as a direct replica of a real-world vehicle.', 'Compare silhouette and proportions with the reference at a glance.']
+  ]},
+  { id:'opt', title:'2. Optimization', intro:'The model viewer and the FiveM console show the numbers. Example screenshots are available on the polygon and file size checks.', items:[
+    ['.yft is 32 MiB or smaller.', 'Read the memory usage from the FiveM console when the resource loads.', 'optimization'],
+    ['_hi.yft is 32 MiB or smaller.', 'Included in the console memory output.', 'optimization'],
+    ['.ytd is 32 MiB or smaller.', '', 'optimization'],
+    ['Every livery and texture is 2048 × 2048 or lower.', 'Livery resolution maximum is 2048 × 2048.'],
+    ['Polygon count is 400,000 or lower.', 'Use the model viewer total. It is planned to drop to 300,000 soon, so note anything above 300,000 below.', 'optimization'],
+    ['L0 (highest detail) is present and correct.'],
+    ['L1, L2 and L3 are all present.', 'The minimum is L0, L1, L2 and L3.'],
+    ['Each LOD is optimized for its distance.', 'Polygon count steps down at each level; no LOD is a copy of L0.'],
+    ['Unnecessary metadata removed.', 'Leftover custom properties and unused data.'],
+    ['Unnecessary geometry removed.', 'Hidden, duplicate or never-visible faces.'],
+    ['Unused materials removed.'],
+    ['Unused or duplicate textures removed.']
+  ]},
+  { id:'col', title:'3. Collision', intro:'Open the collision in the model viewer. Example screenshots are one tap away on each check.', items:[
+    ['chassis.col closely matches the vehicle mesh in a box-like manner.', 'Simple box shapes following the body. Check the left, front, back and top views.', 'collision'],
+    ['Major impact areas use flat, straight collision surfaces.', 'Bumpers, front of the bonnet, doors and rear of the boot.', 'collision'],
+    ['Low LOD collision (chassis_lowlod.col) is present.', 'It should be a low detailed duplicate of the chassis collision.', 'collision'],
+    ['Body part collisions (bonnet, boot, doors) follow the mesh.', '', 'collision'],
+    ['Wheel collisions are present and sized realistically.', 'Compare wheel_lf.col and children against the visible tyre.', 'collision'],
+    ['No bulletproof tyres.', 'Tyres must be able to be shot out; check the flags and wheel setup.'],
+    ['No unrealistic extensions with collisions.', 'Spoilers, wings, antennas, spikes or plough blades that make collision stick out past the body.'],
+    ['chassis_dummy.col follows the reference setup.', 'N/A if not used.', 'collision']
+  ]},
+  { id:'fun', title:'4. Functionality', intro:'Spawn the vehicle in-game and test each part.', items:[
+    ['Driver and passenger doors open and close correctly.'],
+    ['Bonnet and boot open and close correctly.'],
+    ['Wheels spin and steer correctly.'],
+    ['Suspension moves correctly and the vehicle sits at a sensible ride height.'],
+    ['Lights work: headlights, brake lights, indicators and reverse lights.'],
+    ['Damage and breakable parts behave correctly.', 'Windows, bumpers and other breakable parts.'],
+    ['No floating or detached parts.', 'Check from all angles, including under the vehicle.'],
+    ['No improperly rigged parts.', 'Nothing deforms or rotates around the wrong pivot.']
+  ]},
+  { id:'meta', title:'5. Meta files', tool:'handling', intro:'Use the handling.meta checker below for the fixed, max and min fields, then check the other metas by hand.', items:[
+    ['Only standard gameplay flags are used.', 'Review model, handling and damage flags in the metas.'],
+    ['Vehicle uses proper GTA layouts.', 'Layout in vehicles.meta is a valid stock layout for the vehicle type.'],
+    ['Maximum LOD distance is 350.0 or lower.', 'Check every LOD distance in vehicles.meta.'],
+    ['All "fixed" handling values are unchanged.', 'Includes flags, mass, brake force, damage multipliers and the drag coefficient that caps top speed. Auto-filled by the checker.', null, 'h-fixed'],
+    ['All "max" and "min" handling values are within limits.', 'Auto-filled by the checker.', null, 'h-limits'],
+    ['Top speed is within the class limit.', 'Drag coefficient can be any value, as long as the real top speed stays within the limit (standard 220 km/h, off-road 250, commercial 230). Enter the measured speed in the checker above.', null, 'h-speed'],
+    ['Engine sound is acceptable.', 'Custom sounds are allowed; extremely loud sounds are prohibited. Listen next to stock vehicles in-game.']
+  ]},
+  { id:'hier', title:'6. Hierarchy & nodes', items:[
+    ["Hierarchy follows Rockstar's structure.", 'Compare against a stock vehicle in the same class. All required nodes and bones are present and correctly named.'],
+    ['Nodes and bones are correctly positioned.', 'Wheels at wheel centres, door and bonnet hinges at the hinge line, seats, exhaust, lights and other dummies.'],
+    ['Not a flying vehicle.', 'No plane or helicopter handling, flags or layout.'],
+    ['Not a submersible vehicle.', 'No boat or submarine handling, flags or layout.']
+  ]},
+  { id:'app', title:'7. Appearance', items:[
+    ['Glow effects are limited to 30%.', 'Check emissive and glow values on materials and lights.'],
+    ['No animations are present.', 'No animation dictionaries, moving decorative parts or animated textures.']
+  ]},
+  { id:'fin', title:'Final approval', final:true, intro:'A vehicle may be rejected if it fails the standards above, even if each rule individually passes.', items:[
+    ['No performance issues.', 'Check frame rate and streaming with the vehicle spawned, ideally several at once.'],
+    ['No major visual defects.', 'Z-fighting, missing faces, stretched textures, broken transparency, bad shading.'],
+    ['No unfair gameplay advantage.', 'Handling, durability, collision or size that beats other vehicles in its class.'],
+    ['Vehicle meets all of the above standards.']
+  ]}
+];
+
+// ===== STATE =====
+const KEY = 'vehicleApprovalChecklist.v2';
+let S = { fields:{}, marks:{}, notes:{}, auto:{}, lore:{}, overall:'', decision:'', hmeta:'', href:'', hresult:null };
+function load(){ try{ const r = localStorage.getItem(KEY); if(r) S = Object.assign(S, JSON.parse(r)); }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} try{ const r = document.getElementById('reportOut'); if(r) r.textContent = report(); }catch(e){} }
+const FIELDS = ['vName','vBy','vType','vClass','vRev','vDate'];
+const $ = id => document.getElementById(id);
+const keyOf = (sec,i) => sec.items[i][3] || (sec.id+'-'+i);
+const ids = []; SECTIONS.forEach(s => s.items.forEach((_,i) => ids.push(keyOf(s,i))));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ===== RENDER =====
+function render(){
+  // class dropdown
+  const cs = $('vClass'); cs.innerHTML = '<option value="">Select…</option>' + Object.keys(CLASSES).map(k => `<option value="${k}">${CLASSES[k]}</option>`).join('');
+  const nav = $('nav'); nav.innerHTML = '';
+  const host = $('sections'); host.innerHTML = '';
+  SECTIONS.forEach(sec => {
+    const a = document.createElement('a'); a.href = '#sec-'+sec.id; a.id = 'nav-'+sec.id; a.textContent = sec.title.replace(/^\d\.\s*/,''); nav.appendChild(a);
+    const d = document.createElement('div'); d.className = 'panel sec' + (sec.final ? ' final' : ''); d.id = 'sec-'+sec.id;
+    d.innerHTML = `<h2>${sec.title}<small id="cnt-${sec.id}"></small></h2>` + (sec.intro ? `<p class="intro">${sec.intro}</p>` : '') + (sec.tool ? `<div id="tool-${sec.id}"></div>` : '');
+    sec.items.forEach((it, i) => {
+      const [text, hint, ref] = it, k = keyOf(sec, i);
+      const el = document.createElement('div'); el.className = 'item' + (i === 0 && !sec.tool ? ' first' : ''); el.id = 'it-'+k;
+      let refs = '';
+      if(ref && REFS[ref]){
+        refs = `<div class="refs" id="refs-${k}">` + REFS[ref].map(g => `<h4>${esc(g.heading)}</h4><div class="row">` + g.images.map(im => `<img loading="lazy" src="${im.src}" data-cap="${esc(im.caption)}" alt="${esc(im.caption)}">`).join('') + `</div>`).join('') + `</div>`;
+      }
+      el.innerHTML = `<div class="t">${esc(text)}<span class="auto" id="auto-${k}"></span></div>` + (hint ? `<div class="h">${esc(hint)}</div>` : '') +
+        `<div class="seg">
+          <button class="m pass" data-k="${k}" data-v="pass">Pass</button>
+          <button class="m fail" data-k="${k}" data-v="fail">Fail</button>
+          <button class="m na" data-k="${k}" data-v="na">N/A</button>
+          ${ref && REFS[ref] ? `<button class="ex" data-ex="${k}">Examples</button>` : ''}
+        </div>` + refs +
+        `<div class="note"><textarea data-n="${k}" placeholder="Reason for failing / what must change"></textarea></div>`;
+      d.appendChild(el);
+    });
+    host.appendChild(d);
+  });
+  host.querySelectorAll('.seg button.m').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.k, v = b.dataset.v;
+    if(S.marks[k] === v) delete S.marks[k]; else S.marks[k] = v;
+    delete S.auto[k]; save(); refresh();
+  }));
+  host.querySelectorAll('.seg button.ex').forEach(b => b.addEventListener('click', () => $('refs-'+b.dataset.ex).classList.toggle('open')));
+  host.querySelectorAll('.refs img').forEach(im => im.addEventListener('click', () => { $('lboxImg').src = im.src; $('lboxCap').textContent = im.dataset.cap; $('lbox').classList.add('show'); }));
+  host.querySelectorAll('textarea[data-n]').forEach(t => { t.value = S.notes[t.dataset.n] || ''; t.addEventListener('input', () => { S.notes[t.dataset.n] = t.value; save(); }); });
+  FIELDS.forEach(f => { const el = $(f); el.value = S.fields[f] || ''; el.addEventListener('input', () => { S.fields[f] = el.value; save(); if(f==='vClass'||f==='vType') syncHandlingRef(); }); el.addEventListener('change', () => { S.fields[f] = el.value; save(); if(f==='vClass'||f==='vType') syncHandlingRef(); }); });
+  $('overall').value = S.overall || ''; $('overall').addEventListener('input', () => { S.overall = $('overall').value; save(); });
+  $('decision').value = S.decision || ''; $('decision').addEventListener('change', () => { S.decision = $('decision').value; save(); });
+  buildLore(); buildHandling(); refresh();
+}
+function refresh(){
+  let done = 0, fails = 0;
+  ids.forEach(k => { const m = S.marks[k]; if(m) done++; if(m === 'fail') fails++;
+    const it = $('it-'+k); it.classList.toggle('fail', m === 'fail');
+    it.querySelectorAll('.seg button.m').forEach(b => b.classList.toggle('on', b.dataset.v === m));
+    $('auto-'+k).textContent = S.auto[k] ? ' · auto-filled by checker' : '';
+  });
+  SECTIONS.forEach(sec => {
+    const keys = sec.items.map((_,i) => keyOf(sec,i));
+    const d = keys.filter(k => S.marks[k]).length, f = keys.some(k => S.marks[k] === 'fail');
+    $('cnt-'+sec.id).textContent = d + ' / ' + keys.length;
+    $('sec-'+sec.id).classList.toggle('fail', f);
+    const n = $('nav-'+sec.id); n.classList.toggle('f', f); n.classList.toggle('d', !f && d === keys.length);
+  });
+  $('barFill').style.width = (done / ids.length * 100) + '%';
+  $('reportOut').textContent = report();
+  const v = $('verdict'); v.className = 'verdict';
+  if(fails){ v.textContent = 'Changes required · ' + fails + ' failed'; v.classList.add('bad'); }
+  else if(done < ids.length){ v.textContent = 'In review · ' + (ids.length - done) + ' left'; }
+  else { v.textContent = 'Ready to approve'; v.classList.add('ok'); }
+}
+
+// ===== LORE LOOKUP =====
+function buildLore(){
+  const host = $('tool-lore'); if(!host) return;
+  const brands = []; LORE.groups.forEach(g => (g.rows||[]).forEach(r => brands.push({group:g.heading, brand:r.brand, items:r.items})));
+  host.innerHTML = `<div class="panel" style="background:var(--panel2);margin:8px 0" id="tools">
+    <b style="font-size:13px">Brand feature lookup</b>
+    <p class="intro" style="margin:2px 0 8px">Find the real vehicle's brand and tick each signature feature that has been meaningfully altered.</p>
+    <input type="text" id="loreQ" placeholder="Search a brand, e.g. BMW">
+    <div id="loreList"></div>
+    <p class="intro" style="margin-top:8px">${esc(LORE.groups.filter(g=>g.note).map(g=>g.note)[0]||'')}</p></div>`;
+  const draw = () => {
+    const q = $('loreQ').value.trim().toLowerCase();
+    $('loreList').innerHTML = brands.filter(b => !q || b.brand.toLowerCase().includes(q)).map(b => {
+      const ticks = b.items.filter((_,i) => S.lore[b.brand+'|'+i]).length;
+      return `<details class="b" ${q ? 'open' : ''}><summary><span>${esc(b.brand)} <small>${esc(b.group)}</small></span><small>${ticks} / ${b.items.length} altered</small></summary>` +
+        b.items.map((t,i) => `<label><input type="checkbox" data-l="${esc(b.brand)}|${i}" ${S.lore[b.brand+'|'+i] ? 'checked' : ''}> <span>${esc(t)}</span></label>`).join('') + `</details>`;
+    }).join('') || '<p class="intro">No brand matches.</p>';
+    $('loreList').querySelectorAll('input[data-l]').forEach(c => c.addEventListener('change', () => { S.lore[c.dataset.l] = c.checked; save(); const open = [...$('loreList').querySelectorAll('details[open]')].map(x=>x.querySelector('summary span').firstChild.textContent.trim()); draw(); $('loreList').querySelectorAll('details').forEach(x => { if(open.includes(x.querySelector('summary span').firstChild.textContent.trim())) x.open = true; }); }));
+  };
+  $('loreQ').addEventListener('input', draw); draw();
+}
+
+// ===== HANDLING CHECKER =====
+function syncHandlingRef(){
+  const c = S.fields.vClass, t = S.fields.vType; const sel = $('hRef'); if(!sel) return;
+  let r = '';
+  if(t === 'gang') r = HMETA[c] && c !== 'Standard' ? c : '';
+  else if(t && STD_CLASSES.includes(c)) r = 'Standard';
+  if(r){ sel.value = r; S.href = r; save(); }
+  const none = $('hNone'); if(none) none.style.display = (c && t && !r) ? 'block' : 'none';
+}
+function buildHandling(){
+  const host = $('tool-meta'); if(!host) return;
+  host.innerHTML = `<div class="panel" style="background:var(--panel2);margin:8px 0" id="tools">
+    <b style="font-size:13px">handling.meta checker</b>
+    <p class="intro" style="margin:2px 0 8px">Paste the submitted handling.meta. Fields tagged <b>fixed</b> must equal the reference, <b>max</b> must not exceed it, <b>min</b> must not go below it. Untagged fields are free.</p>
+    <label class="f">Reference</label>
+    <select id="hRef"><option value="">Select reference…</option>${Object.keys(HMETA).map(k => `<option value="${k}">${HREF_LABEL[k]||CLASSES[k]||k}</option>`).join('')}</select>
+    <p class="intro" id="hNone" style="display:none;color:var(--warn)">No reference handling.meta has been added for this class yet. Compare against the server-provided file manually.</p>
+    <label class="f" style="margin-top:8px">Submitted handling.meta</label>
+    <textarea class="mono" id="hText" spellcheck="false" placeholder="Paste the XML here"></textarea>
+    <div class="btns"><button class="btn" id="hGo">Check</button><button class="btn sec2" id="hClear">Clear</button></div>
+    <label class="f" style="margin-top:8px">Measured top speed in-game (km/h)</label>
+    <input id="hSpeed" type="number" step="any" placeholder="e.g. 214" style="max-width:160px">
+    <div id="hSpeedOut" class="intro"></div>
+    <div id="hOut"></div></div>`;
+  $('hRef').value = S.href || ''; $('hText').value = S.hmeta || '';
+  $('hRef').addEventListener('change', () => { S.href = $('hRef').value; save(); });
+  $('hText').addEventListener('input', () => { S.hmeta = $('hText').value; save(); });
+  $('hGo').addEventListener('click', runHandling);
+  $('hSpeed').value = S.hspeed || ''; $('hSpeed').addEventListener('input', drawSpeed); $('hRef').addEventListener('change', drawSpeed);
+  $('hClear').addEventListener('click', () => { S.hmeta = ''; S.hresult = null; S.hspeed = ''; $('hSpeed').value = ''; $('hSpeedOut').textContent = ''; $('hText').value = ''; $('hOut').innerHTML = ''; save(); });
+  syncHandlingRef();
+  if(S.hresult) drawHandling(S.hresult);
+}
+function speedLimit(ref){
+  const r = HMETA[ref], t = r && r.fInitialDragCoeff && r.fInitialDragCoeff[1]; const m = t && String(t).match(/(\d+)\s*km/i);
+  return m ? +m[1] : 220;
+}
+function drawSpeed(){
+  const out = $('hSpeedOut'); if(!out) return;
+  const ref = $('hRef').value, v = parseFloat($('hSpeed').value);
+  if(!ref || isNaN(v)){ out.textContent = ''; return; }
+  const lim = speedLimit(ref), ok = v <= lim + 1e-9;
+  out.innerHTML = ok ? `<span class="st-ok">${v} km/h is within the ${lim} km/h limit</span>` : `<span class="st-bad">${v} km/h is over the ${lim} km/h limit</span>`;
+  S.marks['h-speed'] = ok ? 'pass' : 'fail'; S.auto['h-speed'] = true;
+  S.notes['h-speed'] = ok ? '' : `Top speed is ${v} km/h; the limit is ${lim} km/h. Adjust the drag coefficient (or drive force / max flat velocity) until the top speed is within the limit.`;
+  const t = document.querySelector(`textarea[data-n="h-speed"]`); if(t) t.value = S.notes['h-speed'];
+  S.hspeed = $('hSpeed').value; save(); refresh();
+}
+function parseSubmitted(txt){
+  const out = {};
+  const doc = new DOMParser().parseFromString(txt, 'text/xml');
+  if(!doc.querySelector('parsererror')){
+    const item = doc.querySelector('Item[type="CHandlingData"]') || doc.documentElement;
+    [...item.children].forEach(ch => { if(ch.tagName === 'SubHandlingData') return; out[ch.tagName] = ch.hasAttribute('value') ? ch.getAttribute('value') : ch.textContent.trim(); });
+    return out;
+  }
+  const re = /<(\w+)\s+value="([^"]*)"/g; let m; while((m = re.exec(txt))) out[m[1]] = m[2];
+  const re2 = /<(strModelFlags|strHandlingFlags|strDamageFlags|AIHandling)>([^<]*)</g; while((m = re2.exec(txt))) out[m[1]] = m[2].trim();
+  return out;
+}
+function runHandling(){
+  const ref = $('hRef').value, txt = $('hText').value;
+  if(!ref){ toast('Select a reference first'); return; }
+  if(!txt.trim()){ toast('Paste the handling.meta first'); return; }
+  const sub = parseSubmitted(txt), rules = HMETA[ref], rows = [];
+  Object.keys(rules).forEach(f => {
+    const [rv, tag] = rules[f]; let kind = tag;
+    if(tag && !['fixed','max','min'].includes(tag)) kind = 'speed'; // drag coefficient: any value is fine as long as the resulting top speed is within the limit
+    if(!kind) return;
+    const sv = sub[f]; let st;
+    if(kind === 'speed') st = 'info';
+    else if(sv === undefined) st = 'missing';
+    else {
+      const a = parseFloat(sv), b = parseFloat(rv), numeric = !isNaN(a) && !isNaN(b) && /^-?[\d.]+$/.test(String(sv).trim());
+      if(kind === 'fixed') st = (numeric ? Math.abs(a-b) < 1e-9 : String(sv).trim() === String(rv)) ? 'ok' : 'bad';
+      else if(kind === 'max') st = numeric && a <= b + 1e-9 ? 'ok' : 'bad';
+      else st = numeric && a >= b - 1e-9 ? 'ok' : 'bad';
+    }
+    rows.push({f, kind, tag, ref:rv, sub:sv === undefined ? '—' : sv, st, lim: kind === 'speed' ? speedLimit(ref) : undefined});
+  });
+  const res = { ref, rows }; S.hresult = res; save(); drawHandling(res); drawSpeed();
+  const grp = k => rows.filter(r => k.includes(r.kind));
+  apply('h-fixed', grp(['fixed']), 'fixed'); apply('h-limits', grp(['max','min']), 'limits');
+  refresh();
+}
+function apply(key, rs, label){
+  const bad = rs.filter(r => r.st !== 'ok');
+  S.marks[key] = bad.length ? 'fail' : 'pass'; S.auto[key] = true;
+  S.notes[key] = bad.length ? 'handling.meta: ' + bad.map(r => `${r.f} ${r.st === 'missing' ? 'missing' : 'is ' + r.sub + ' (' + r.kind + ' ' + r.ref + ')'}`).join('; ') : '';
+  const t = document.querySelector(`textarea[data-n="${key}"]`); if(t) t.value = S.notes[key];
+  save();
+}
+function drawHandling(res){
+  const bad = res.rows.filter(r => r.st === 'bad' || r.st === 'missing');
+  $('hOut').innerHTML = `<div class="sum">${bad.length ? `<span class="st-bad">${bad.length} field(s) out of spec</span>` : '<span class="st-ok">All fixed / max / min fields are within spec</span>'} · ${res.rows.length} fields listed. Drag coefficient is not a fixed value; enter the measured top speed below. The two handling checks below were filled in automatically; you can override them.</div>` +
+    `<table class="ck"><tr><th>Field</th><th>Rule</th><th>Reference</th><th>Submitted</th><th></th></tr>` +
+    res.rows.sort((a,b) => (a.st==='ok'||a.st==='info') - (b.st==='ok'||b.st==='info')).map(r => `<tr><td>${esc(r.f)}</td><td>${r.kind==='speed'?'any value':esc(r.kind)}</td><td>${r.kind==='speed'?'top speed ≤ '+speedLimit(res.ref)+' km/h':esc(r.ref)}</td><td>${esc(r.sub)}</td><td class="st-${r.st==='ok'?'ok':r.st==='bad'?'bad':'miss'}">${r.st==='ok'?'OK':r.st==='bad'?'Out of spec':r.st==='info'?'Check top speed':'Missing'}</td></tr>`).join('') + `</table>`;
+}
+
+// ===== ACTIONS =====
+function toast(m){ const t = $('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1800); }
+function report(){
+  const F = S.fields, fails = [];
+  let done = 0;
+  SECTIONS.forEach(sec => sec.items.forEach((it, i) => {
+    const k = keyOf(sec,i); if(S.marks[k]) done++;
+    if(S.marks[k] === 'fail') fails.push({ sec: sec.title.replace(/^\d+\.\s*/,''), rule: it[0], note: (S.notes[k]||'').trim() });
+  }));
+  const who = (F.vBy||'').trim(), car = (F.vName||'').trim(), cls = CLASSES[F.vClass] || '', sign = (F.vRev||'').trim() || 'Vehicle Approval Team';
+  const what = car ? 'your custom vehicle request "' + car + '"' + (cls ? ' (' + cls + ')' : '') : 'your custom vehicle request';
+  const typeLbl = {civilian:'Civilian', club:'Club', police:'Police', medic:'Medic', gang:'Gang'}[F.vType] || '';
+  const L = [];
+  [['Vehicle name', car], ['Submitted by', who], ['Vehicle type', typeLbl], ['Class', cls], ['Reviewed by', (F.vRev||'').trim()], ['Review date', (F.vDate||'').trim()]]
+    .forEach(([k, v]) => { if(v) L.push(k + ': ' + v); });
+  if(L.length) L.push('');
+  L.push('Hello' + (who ? ' ' + who : '') + ',', '');
+  if(!fails.length){
+    L.push(done === ids.length ? 'Thank you for submitting ' + what + '. We have reviewed it and it meets all of our vehicle requirements.' : 'No failed rules have been recorded for ' + what + ' yet.');
+  } else {
+    L.push('Thank you for submitting ' + what + '. After reviewing it, we are unable to approve it yet because the following rules were not met:', '');
+    fails.forEach((f, n) => { L.push((n+1) + '. ' + f.sec + ': ' + f.rule); if(f.note) L.push('   Required correction: ' + f.note); });
+    L.push('', 'Next steps:', 'Please correct every item listed above and attach proof of each corrected aspect (for example screenshots, the updated files or meta values) when you resubmit. Your vehicle will be reconsidered for approval once proof of all corrections has been provided.');
+  }
+  if((S.overall||'').trim()) L.push('', 'Additional notes: ' + S.overall.trim());
+  L.push('', 'Thank you,', sign);
+  return L.join('\n');
+}
+$('copyBtn').addEventListener('click', async () => { try{ await navigator.clipboard.writeText(report()); toast('Report copied'); } catch(e){ window.prompt('Copy the report:', report()); } });
+$('printBtn').addEventListener('click', () => window.print());
+$('resetBtn').addEventListener('click', () => {
+  if(!confirm('Clear all marks, notes, pasted metas and fields?')) return;
+  S = { fields:{}, marks:{}, notes:{}, auto:{}, lore:{}, overall:'', decision:'', hmeta:'', href:'', hresult:null }; save(); render(); toast('Checklist reset');
+});
+$('lbox').addEventListener('click', () => $('lbox').classList.remove('show'));
+document.addEventListener('keydown', e => { if(e.key === 'Escape') $('lbox').classList.remove('show'); });
+
+// ===== GATE + START =====
+function start(){ $('gate').style.display = 'none'; load(); render(); }
+if(STAFF_PASSCODE){
+  let ok = false; try{ ok = sessionStorage.getItem('vac.ok') === '1'; }catch(e){}
+  if(ok) start();
+  else {
+    $('gate').style.display = 'flex';
+    const tryIt = () => { if($('gateIn').value === STAFF_PASSCODE){ try{ sessionStorage.setItem('vac.ok','1'); }catch(e){} start(); } else $('gateErr').textContent = 'Incorrect passcode.'; };
+    $('gateBtn').addEventListener('click', tryIt);
+    $('gateIn').addEventListener('keydown', e => { if(e.key === 'Enter') tryIt(); });
+  }
+} else start();
+</script>
+</body>
+</html>
